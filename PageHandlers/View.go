@@ -13,6 +13,7 @@ type ViewPageData struct {
 	Filename 	string
 	Id 			string
 	Extension 	string
+	Metadata 	DirectoryIndexers.Metadata
 }
 
 func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexers.FileList) {
@@ -35,6 +36,7 @@ func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexe
 		Filename:  video.Filename,
 		Id:        video.Id,
 		Extension: video.Extension,
+		Metadata:  video.Metadata,
 	}
 
 	err := tmpl["view.html"].ExecuteTemplate(writer, "base", data)

@@ -1,9 +1,9 @@
 {{define "head"}}
-    <title>ytdlp-viewer | {{.FileCount}}</title>
+    <title>ytdlp-viewer | {{.FileCount}} videos</title>
 {{end}}
 
 {{define "body"}}
-<div style="text-align: center;">
+<div>
     <h1>yt-dlp Viewer</h1>
     <h2>{{.FileCount}} files in this archive</h2>
 
@@ -15,7 +15,9 @@
     </form>
 
     {{range .Files}}
-    <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
+        <p><a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a>
+            {{ if .Metadata.ChannelID }} [M] {{ end }}
+            {{ if .Metadata.ChannelID }} - {{.Metadata.Channel }} {{ end }}<br /></p>
     {{end}}
 </div>
 {{end}}

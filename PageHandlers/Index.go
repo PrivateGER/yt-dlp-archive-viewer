@@ -22,8 +22,6 @@ func Index(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndex
 		Files:     FL.Files,
 	}
 
-	fmt.Println(tmpl["index.html"].Name())
-
 	err := tmpl["index.html"].ExecuteTemplate(writer, "base", data)
 	if err != nil {
 		fmt.Println(err)

@@ -5,6 +5,7 @@ import (
 	"github.com/dlclark/regexp2"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -20,6 +21,7 @@ type VideoFile struct {
 	Extension string
 	Title string
 	Id string
+	Metadata Metadata
 }
 
 func Index(path string, results chan FileList) {
@@ -56,11 +58,34 @@ func Index(path string, results chan FileList) {
 
 		id := filenameToID(video.Name())
 
+		videoObject := VideoFile{
+			Filename:  video.Name(),
+			Extension: extension,
+			Title:     filenameToTitle(video.Name(), extension),
+			Id:        id,
+		}
+
+		metadataFilename := strings.TrimSuffix(video.Name(), filepath.Ext(video.Name())) + ".info.json"
+		jsonMetadataFile, err := os.Open(path + metadataFilename)
+		if err != nil {
+			FL.Files[id] = videoObject
+			continue
+		}
+		metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
+		_ = jsonMetadataFile.Close()
+
+		metadata, err := ParseMetadata(metadataBytes)
+		if err != nil {
+			FL.Files[id] = videoObject
+			continue
+		}
+
 		FL.Files[id] = VideoFile{
 			Filename:  video.Name(),
 			Extension: extension,
 			Title:     filenameToTitle(video.Name(), extension),
 			Id:        id,
+			Metadata:  metadata,
 		}
 	}
 

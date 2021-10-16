@@ -8,10 +8,49 @@
 {{end}}
 
 {{define "body"}}
-    <video class="video-js vjs-big-play-centered centeredvideo" id="player" height="720" width="1280" controls autoplay data-setup="{}">
-        <source src="/videos/{{.Filename}}">
-    </video>
-    <h1>{{.Title}}</h1>
+    <div style="max-width: 1280px">
+        <video class="video-js vjs-big-play-centered centeredvideo" id="player" height="720" width="1280" controls autoplay data-setup="{}">
+            <source src="/videos/{{.Filename}}">
+        </video>
+        <h1>{{.Title}}</h1>
+
+        {{ if .Metadata.ChannelID }}
+            <div>
+                <p style="float: right">{{ .Metadata.LikeCount }} likes | {{ .Metadata.DislikeCount }} dislikes</p>
+
+                <p>{{ .Metadata.ViewCount }} views</p>
+                <p>Uploaded by: <a href="{{ .Metadata.UploaderURL }}">{{ .Metadata.Channel }}</a></p>
+                <hr />
+
+                <div style="clear: both"></div>
+            </div>
+            <br />
+
+            <div style="white-space: pre-line;">
+                {{ .Metadata.Description }}
+            </div>
+
+            <p>Comments: ({{ .Metadata.CommentCount }}</p>
+            <hr />
+            <div>
+                {{range .Metadata.Comments}}
+                    <div>
+                        <img src="{{ .AuthorThumbnail }}" style="border-radius: 50%; max-height: 75px; max-width: 75px; float: left" />
+                        <p>{{ .Author }}</p>
+                        <div style="clear: both"></div>
+                        <p>{{ .LikeCount }} likes</p>
+                    </div>
+                    <div style="white-space: pre-line;">
+                        {{ .Text }}
+                    </div>
+                    <hr />
+                {{end}}
+            </div>
+        {{ end }}
+    </div>
+    <br />
+
+
     <p>Filetype: {{.Extension}}</p>
     <p>Youtube ID: {{.Id}}</p>
     <p>Filename: {{.Filename}}</p>
