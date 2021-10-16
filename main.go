@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,10 +12,10 @@ import (
 )
 
 func main() {
-	path := os.Getenv("directory")
-	if path == "" {
-		path = "/home/latte/NFS/MainArchive/"
-	}
+	var path string
+	flag.StringVar(&path, "path", "./", "the full path to the ytdlp archive (with a / suffix)")
+
+	flag.Parse()
 
 	var FL DirectoryIndexers.FileList
 	go func() {
@@ -28,13 +29,6 @@ func main() {
 			time.Sleep(60 * time.Second)
 		}
 	}()
-
-	/*FL.RLock()
-	fmt.Println(strconv.Itoa(len(FL.Files)))
-	for _, file := range FL.Files {
-		fmt.Println("Name:", file.Title,"Extension:", file.Extension, "ID:", file.Id)
-	}
-	FL.RUnlock()*/
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println(time.Now().String(),request.URL)
