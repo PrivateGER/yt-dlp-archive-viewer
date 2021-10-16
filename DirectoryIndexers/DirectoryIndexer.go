@@ -39,54 +39,73 @@ func Index(path string, results chan FileList) {
 	}
 
 	FL.Files = make(map[string]VideoFile)
+	var wg sync.WaitGroup
+
 	for _, video := range fileList {
-		extension := filepath.Ext(video.Name())[1:]
-		// check if extension is one of valid yt-dlp extensions, if not ignore file
-		switch extension {
-		case "3gp",
-			"aac",
-			"flv",
-			"m4a",
-			"mp3",
-			"mp4",
-			"webm":
+		wg.Add(1)
+		go func(video os.FileInfo) {
+
+			extension := filepath.Ext(video.Name())[1:]
+			// check if extension is one of valid yt-dlp extensions, if not ignore file
+			switch extension {
+			case "3gp",
+				"aac",
+				"flv",
+				"m4a",
+				"mp3",
+				"mp4",
+				"webm":
 				break
-		default:
-			continue
-		}
+			default:
+				wg.Done()
+				return
+			}
 
-		id := filenameToID(video.Name())
+			id := filenameToID(video.Name())
 
-		videoObject := VideoFile{
-			Filename:  video.Name(),
-			Extension: extension,
-			Title:     filenameToTitle(video.Name(), extension),
-			Id:        id,
-		}
+			videoObject := VideoFile{
+				Filename:  video.Name(),
+				Extension: extension,
+				Title:     filenameToTitle(video.Name(), extension),
+				Id:        id,
+			}
 
-		metadataFilename := strings.TrimSuffix(video.Name(), filepath.Ext(video.Name())) + ".info.json"
-		jsonMetadataFile, err := os.Open(path + metadataFilename)
-		if err != nil {
-			FL.Files[id] = videoObject
-			continue
-		}
-		metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
-		_ = jsonMetadataFile.Close()
+			metadataFilename := strings.TrimSuffix(video.Name(), filepath.Ext(video.Name())) + ".info.json"
+			jsonMetadataFile, err := os.Open(path + metadataFilename)
+			if err != nil {
+				FL.Lock()
+				FL.Files[id] = videoObject
+				FL.Unlock()
+				wg.Done()
+				return
+			}
+			metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
+			_ = jsonMetadataFile.Close()
 
-		metadata, err := ParseMetadata(metadataBytes)
-		if err != nil {
-			FL.Files[id] = videoObject
-			continue
-		}
+			metadata, err := ParseMetadata(metadataBytes)
+			if err != nil {
+				FL.Lock()
+				FL.Files[id] = videoObject
+				FL.Unlock()
+				wg.Done()
+				return
+			}
 
-		FL.Files[id] = VideoFile{
-			Filename:  video.Name(),
-			Extension: extension,
-			Title:     filenameToTitle(video.Name(), extension),
-			Id:        id,
-			Metadata:  metadata,
-		}
+			FL.Lock()
+			FL.Files[id] = VideoFile{
+				Filename:  video.Name(),
+				Extension: extension,
+				Title:     filenameToTitle(video.Name(), extension),
+				Id:        id,
+				Metadata:  metadata,
+			}
+			FL.Unlock()
+
+			wg.Done()
+		}(video)
 	}
+
+	wg.Wait()
 
 	results <- FL
 	close(results)
