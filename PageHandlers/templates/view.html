@@ -5,16 +5,23 @@
     <title>{{.Title}} | {{.Id}}</title>
     <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/videojs-seek-buttons/dist/videojs-seek-buttons.css" rel="stylesheet">
+    <style>
+        .centeredvideo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto
+        }
+    </style>
 </head>
 <body>
-    <video class="video-js vjs-big-play-centered" id="player" height="480" width="720" controls autoplay data-setup="{}">
+    <video class="video-js vjs-big-play-centered centeredvideo" id="player" height="480" width="720" controls autoplay data-setup="{}">
         <source src="/videos/{{.Filename}}">
     </video>
     <h1>{{.Title}}</h1>
     <p>Filetype: {{.Extension}}</p>
     <p>Youtube ID: {{.Id}}</p>
     <p>Filename: {{.Filename}}</p>
-    <a href="/videos/{{.Filename}}">direct video link</a>
+    <a href="/videos/{{.Filename}}">Direct video link</a>
 
     <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/videojs-seek-buttons/dist/videojs-seek-buttons.min.js"></script>

@@ -1,4 +1,4 @@
-package main
+package DirectoryIndexers
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 )
 
 type FileList struct {
-	files map[string]VideoFile
-	mu sync.Mutex
+	Files map[string]VideoFile
+	*sync.RWMutex
 }
 
 type VideoFile struct {
@@ -22,13 +22,12 @@ type VideoFile struct {
 	Id string
 }
 
-var FL FileList
+func Index(path string, results chan FileList) {
+	var FL FileList
 
-func ScanDirectory(group *sync.WaitGroup, path string) {
-	defer group.Done()
-
-	FL.mu.Lock()
-	defer FL.mu.Unlock()
+	// Initialize the RWMutex HERE manually because *IT IS A POINTER TO A MUTEX*, so it defaults to a nil value
+	FL.RWMutex = &sync.RWMutex{}
+	FL.Lock()
 
 	fmt.Println("Scanning archive...")
 
@@ -38,7 +37,7 @@ func ScanDirectory(group *sync.WaitGroup, path string) {
 		return
 	}
 
-	FL.files = make(map[string]VideoFile)
+	FL.Files = make(map[string]VideoFile)
 	for _, video := range fileList {
 		extension := filepath.Ext(video.Name())[1:]
 		// check if extension is one of valid yt-dlp extensions, if not ignore file
@@ -57,13 +56,18 @@ func ScanDirectory(group *sync.WaitGroup, path string) {
 
 		id := filenameToID(video.Name())
 
-		FL.files[id] = VideoFile{
+		FL.Files[id] = VideoFile{
 			Filename:  video.Name(),
 			Extension: extension,
 			Title:     filenameToTitle(video.Name(), extension),
 			Id:        id,
 		}
 	}
+
+	FL.Unlock()
+
+	results <- FL
+	close(results)
 
 	fmt.Println("Archive scan finished.")
 }
