@@ -20,6 +20,7 @@
 
                 <p>{{ .Metadata.ViewCount }} views</p>
                 <p>Uploaded by: <a href="{{ .Metadata.UploaderURL }}">{{ .Metadata.Channel }}</a></p>
+                <p>Uploaded at: <span id="uploadDate"></span></p>
                 <hr />
 
                 <div style="clear: both"></div>
@@ -30,7 +31,9 @@
                 {{ .Metadata.Description }}
             </div>
 
-            <p>Comments: ({{ .Metadata.CommentCount }}</p>
+            <hr />
+
+            <h3>Comments ({{ .Metadata.CommentCount }}):</h3>
             <hr />
             <div>
                 {{range .Metadata.Comments}}
@@ -66,4 +69,19 @@
             back: 10
         });
     </script>
+    {{ if .Metadata.ChannelID }}
+        <script>
+            String.prototype.insert = function(index, string) {
+                if (index > 0) {
+                    return this.substring(0, index) + string + this.substr(index);
+                }
+                return string + this;
+            };
+
+            let datestring = "{{ .Metadata.UploadDate }}".insert(4, "-").insert(7, "-")
+            let date = new Date(datestring)
+
+            document.getElementById("uploadDate").innerText = `${date.getDay()+1}.${date.getMonth()+1}.${date.getFullYear()}`
+        </script>
+    {{end}}
 {{end}}
