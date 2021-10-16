@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{{define "head"}}
     <title>Search result | {{.SearchTerm}}</title>
-</head>
-<body>
+{{end}}
+
+{{define "body"}}
     <form action="/search" method="get">
         <label>
             Search term:
@@ -15,5 +13,4 @@
     {{range .Results}}
         <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
     {{end}}
-</body>
-</html>
+{{end}}

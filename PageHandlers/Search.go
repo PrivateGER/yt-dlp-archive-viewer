@@ -3,26 +3,12 @@ package PageHandlers
 import (
 	_ "embed"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"ytdlp-viewer/DirectoryIndexers"
 )
-
-//go:embed templates/search.html
-var searchTmplSource string
-var searchTmpl *template.Template
-
-func init() {
-	var err error
-	searchTmpl = template.New("search.tmpl")
-	searchTmpl, err = searchTmpl.Parse(searchTmplSource)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
 
 type SearchPageData struct {
 	Results		[]DirectoryIndexers.VideoFile
@@ -59,7 +45,7 @@ func SearchHandler(writer http.ResponseWriter, request *http.Request, FL *Direct
 		SearchTerm: keys[0],
 	}
 
-	err := searchTmpl.Execute(writer, data)
+	err := tmpl["search.html"].ExecuteTemplate(writer, "base", data)
 	if err != nil {
 		fmt.Println(err)
 	}

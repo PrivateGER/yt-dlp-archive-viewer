@@ -1,0 +1,32 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            color: white;
+        }
+        input{
+            color: black;
+        }
+    </style>
+    {{template "head" .}}
+</head>
+<body style="background-color: #212121">
+    <div style="background-color: #424242; padding: 8px; border-radius: 15px; margin-bottom: 50px">
+        <h1 style="float: left">yt-dlp Archive Viewer</h1>
+        <form action="/search" method="get" style="float: right; margin: auto">
+            <label>
+                Search term:
+                <input type="text" name="term" required>
+            </label>
+        </form>
+        <div style="clear:both;"></div>
+    </div>
+    <div style="padding: 10px">
+        {{template "body" .}}
+    </div>
+</body>
+</html>
+{{end}}

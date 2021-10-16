@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{{define "head"}}
     <title>ytdlp-viewer | {{.FileCount}}</title>
-</head>
-<body>
-<center>
+{{end}}
+
+{{define "body"}}
+<div style="text-align: center;">
     <h1>yt-dlp Viewer</h1>
     <h2>{{.FileCount}} files in this archive</h2>
 
@@ -17,8 +15,7 @@
     </form>
 
     {{range .Files}}
-        <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
+    <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
     {{end}}
-</center>
-</body>
-</html>
+</div>
+{{end}}
