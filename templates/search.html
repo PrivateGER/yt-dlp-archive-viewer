@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search result | {{.SearchTerm}}</title>
+</head>
+<body>
+    <form action="/search" method="get">
+        <label>
+            Search term:
+            <input type="text" name="term" value="{{.SearchTerm}}" required>
+        </label>
+    </form>
+
+    {{range .Results}}
+        <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
+    {{end}}
+</body>
+</html>
