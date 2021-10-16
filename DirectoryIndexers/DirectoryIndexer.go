@@ -29,7 +29,6 @@ func Index(path string, results chan FileList) {
 
 	// Initialize the RWMutex HERE manually because *IT IS A POINTER TO A MUTEX*, so it defaults to a nil value
 	FL.RWMutex = &sync.RWMutex{}
-	FL.Lock()
 
 	fmt.Println("Scanning archive...")
 
@@ -88,8 +87,6 @@ func Index(path string, results chan FileList) {
 			Metadata:  metadata,
 		}
 	}
-
-	FL.Unlock()
 
 	results <- FL
 	close(results)
