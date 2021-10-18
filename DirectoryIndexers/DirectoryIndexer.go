@@ -66,42 +66,13 @@ func Index(path string, results chan FileList) {
 
 			id := filenameToID(video.Name())
 
-			videoObject := VideoFile{
-				Filename:  video.Name(),
-				Extension: extension,
-				Title:     filenameToTitle(video.Name(), extension),
-				Id:        id,
-			}
-
-			metadataFilename := strings.TrimSuffix(video.Name(), filepath.Ext(video.Name())) + ".info.json"
-			jsonMetadataFile, err := os.Open(path + metadataFilename)
-			if err != nil {
-				FL.Lock()
-				FL.Files[id] = videoObject
-				FL.Unlock()
-				wg.Done()
-				return
-			}
-
-			metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
-			_ = jsonMetadataFile.Close()
-
-			metadata, err := ParseMetadata(metadataBytes)
-			if err != nil {
-				FL.Lock()
-				FL.Files[id] = videoObject
-				FL.Unlock()
-				wg.Done()
-				return
-			}
-
 			FL.Lock()
 			FL.Files[id] = VideoFile{
 				Filename:  video.Name(),
 				Extension: extension,
 				Title:     filenameToTitle(video.Name(), extension),
 				Id:        id,
-				Metadata:  metadata,
+				Metadata:  Metadata{},
 			}
 			FL.Unlock()
 

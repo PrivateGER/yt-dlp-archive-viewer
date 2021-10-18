@@ -50,7 +50,7 @@ func main() {
 	})
 	http.HandleFunc("/view", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println(time.Now().String(),request.URL)
-		PageHandlers.View(writer, request, &FL)
+		PageHandlers.View(writer, request, &FL, path)
 	})
 	http.Handle("/videos/", http.StripPrefix("/videos/", http.FileServer(http.Dir(path))))
 

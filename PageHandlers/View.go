@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"ytdlp-viewer/DirectoryIndexers"
 )
 
@@ -16,9 +17,9 @@ type ViewPageData struct {
 	Metadata 	DirectoryIndexers.Metadata
 }
 
-func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexers.FileList) {
-	FL.RLock()
-	defer FL.RUnlock()
+func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexers.FileList, path string) {
+	FL.Lock()
+	defer FL.Unlock()
 
 	keys, ok := request.URL.Query()["id"]
 	if !ok || len(keys[0]) < 1 {
@@ -28,6 +29,17 @@ func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexe
 
 	if _, ok := FL.Files[keys[0]]; !ok {
 		return
+	}
+
+	// if no metadata loaded, do so
+	if reflect.ValueOf(FL.Files[keys[0]].Metadata).IsZero() {
+		metadata, err := DirectoryIndexers.LoadMetadata(FL.Files[keys[0]], path)
+		if err == nil {
+			var fileObject DirectoryIndexers.VideoFile
+			fileObject = FL.Files[keys[0]]
+			fileObject.Metadata = metadata
+			FL.Files[keys[0]] = fileObject
+		}
 	}
 
 	video := FL.Files[keys[0]]

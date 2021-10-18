@@ -3,6 +3,10 @@ package DirectoryIndexers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Metadata struct {
@@ -49,4 +53,22 @@ func ParseMetadata(jsonBytes []byte) (Metadata, error) {
 		return Metadata{}, err
 	}
 	return meta, err
+}
+
+func LoadMetadata(videoobject VideoFile, path string) (Metadata, error) {
+	metadataFilename := strings.TrimSuffix(videoobject.Filename, filepath.Ext(videoobject.Filename)) + ".info.json"
+	jsonMetadataFile, err := os.Open(path + metadataFilename)
+	if err != nil {
+		return Metadata{}, err
+	}
+
+	metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
+	_ = jsonMetadataFile.Close()
+
+	metadata, err := ParseMetadata(metadataBytes)
+	if err != nil {
+		return Metadata{}, err
+	}
+
+	return metadata, nil
 }
