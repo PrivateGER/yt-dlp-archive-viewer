@@ -28,7 +28,7 @@
                 <p style="float: right">{{ .Metadata.LikeCount }} likes | {{ .Metadata.DislikeCount }} dislikes</p>
 
                 <p>{{ .Metadata.ViewCount }} views</p>
-                <p>Uploaded by: <a href="/search?term={{ .Metadata.Channel }}">{{ .Metadata.Channel }}</a></p>
+                <p>Uploaded by: <a href="/search?term={{ .Metadata.Channel }}">{{ .Metadata.Channel }}</a> <a href="{{ .Metadata.ChannelURL }}">[YT]</a></p>
                 <p>Uploaded at: <span id="uploadDate"></span></p>
                 <hr />
 
@@ -39,6 +39,15 @@
             <div style="white-space: pre-line;">
                 {{ .Metadata.Description }}
             </div>
+
+
+        {{ end }}
+
+        <p>Youtube ID: {{.Id}}</p>
+        <a href="https://youtube.com/watch?v={{ .Id }}">YouTube Link</a><br />
+        <a href="/videos/{{.Filename}}">Direct video link</a>
+
+        {{ if .Metadata.ChannelID }}
 
             <hr />
 
@@ -61,12 +70,6 @@
         {{ end }}
     </div>
     <br />
-
-
-    <p>Filetype: {{.Extension}}</p>
-    <p>Youtube ID: {{.Id}}</p>
-    <p>Filename: {{.Filename}}</p>
-    <a href="/videos/{{.Filename}}">Direct video link</a>
 
     <script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/videojs-seek-buttons/dist/videojs-seek-buttons.min.js"></script>
