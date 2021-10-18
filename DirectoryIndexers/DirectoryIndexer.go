@@ -3,6 +3,7 @@ package DirectoryIndexers
 import (
 	"fmt"
 	"github.com/dlclark/regexp2"
+	"github.com/schollz/progressbar/v3"
 	"io/ioutil"
 	"log"
 	"os"
@@ -41,10 +42,12 @@ func Index(path string, results chan FileList) {
 	FL.Files = make(map[string]VideoFile)
 	var wg sync.WaitGroup
 
+	bar := progressbar.NewOptions(len(fileList),
+		progressbar.OptionSetDescription("Scanning files + metadata..."))
+
 	for _, video := range fileList {
 		wg.Add(1)
 		go func(video os.FileInfo) {
-
 			extension := filepath.Ext(video.Name())[1:]
 			// check if extension is one of valid yt-dlp extensions, if not ignore file
 			switch extension {
@@ -79,6 +82,7 @@ func Index(path string, results chan FileList) {
 				wg.Done()
 				return
 			}
+
 			metadataBytes, _ := ioutil.ReadAll(jsonMetadataFile)
 			_ = jsonMetadataFile.Close()
 
@@ -101,11 +105,15 @@ func Index(path string, results chan FileList) {
 			}
 			FL.Unlock()
 
+			_ = bar.Add(1)
 			wg.Done()
 		}(video)
 	}
 
 	wg.Wait()
+	if !bar.IsFinished() {
+		_ = bar.Finish()
+	}
 
 	results <- FL
 	close(results)
