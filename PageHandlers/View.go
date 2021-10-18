@@ -11,6 +11,7 @@ import (
 type ViewPageData struct {
 	Title 		string
 	Filename 	string
+	Thumbnail	string
 	Id 			string
 	Extension 	string
 	Metadata 	DirectoryIndexers.Metadata
@@ -45,6 +46,7 @@ func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexe
 	data := ViewPageData{
 		Title:     video.Title,
 		Filename:  video.Filename,
+		Thumbnail: video.Thumbnail,
 		Id:        video.Id,
 		Extension: video.Extension,
 		Metadata:  video.Metadata,

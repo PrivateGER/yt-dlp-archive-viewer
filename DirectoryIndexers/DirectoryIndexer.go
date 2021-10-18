@@ -19,6 +19,7 @@ type FileList struct {
 
 type VideoFile struct {
 	Filename string
+	Thumbnail string
 	Extension string
 	Title string
 	Id string
@@ -43,7 +44,9 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 	var wg sync.WaitGroup
 
 	bar := progressbar.NewOptions(len(fileList),
-		progressbar.OptionSetDescription("Scanning files + metadata..."))
+		progressbar.OptionSetDescription("Scanning files + metadata..."),
+		progressbar.OptionShowCount(),
+		progressbar.OptionShowIts())
 
 	for _, video := range fileList {
 		wg.Add(1)
@@ -61,6 +64,7 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 				break
 			default:
 				wg.Done()
+				_ = bar.Add(1)
 				return
 			}
 
@@ -80,6 +84,7 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 
 			videoObject := VideoFile{
 				Filename:  video.Name(),
+				Thumbnail: strings.TrimSuffix(video.Name(), filepath.Ext(video.Name())) + ".webp",
 				Extension: extension,
 				Title:     filenameToTitle(video.Name(), extension),
 				Id:        id,

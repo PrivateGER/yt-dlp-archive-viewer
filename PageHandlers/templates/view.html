@@ -9,7 +9,16 @@
 
 {{define "body"}}
     <div style="max-width: 1280px">
-        <video class="video-js vjs-big-play-centered centeredvideo" id="player" height="720" width="1280" controls autoplay data-setup="{}">
+        <video
+                class="video-js vjs-big-play-centered centeredvideo"
+                id="player"
+                height="720"
+                width="1280"
+                controls
+                autoplay
+                data-setup="{}"
+                poster="/videos/{{ .Thumbnail }}"
+        >
             <source src="/videos/{{.Filename}}">
         </video>
         <h1>{{.Title}}</h1>
@@ -19,7 +28,7 @@
                 <p style="float: right">{{ .Metadata.LikeCount }} likes | {{ .Metadata.DislikeCount }} dislikes</p>
 
                 <p>{{ .Metadata.ViewCount }} views</p>
-                <p>Uploaded by: <a href="{{ .Metadata.UploaderURL }}">{{ .Metadata.Channel }}</a></p>
+                <p>Uploaded by: <a href="/search?term={{ .Metadata.Channel }}">{{ .Metadata.Channel }}</a></p>
                 <p>Uploaded at: <span id="uploadDate"></span></p>
                 <hr />
 

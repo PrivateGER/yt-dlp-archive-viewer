@@ -11,6 +11,6 @@
     </form>
 
     {{range .Results}}
-        <a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a><br />
+        <a href="/view?id={{.Id}}">{{.Title}} {{ if .Metadata.Channel }} - {{ .Metadata.Channel }} {{end}} - {{.Id}}</a><br />
     {{end}}
 {{end}}
