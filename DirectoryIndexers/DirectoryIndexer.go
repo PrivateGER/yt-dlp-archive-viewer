@@ -44,13 +44,18 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 	var wg sync.WaitGroup
 
 	bar := progressbar.NewOptions(len(fileList),
-		progressbar.OptionSetDescription("Scanning files + metadata..."),
 		progressbar.OptionShowCount(),
 		progressbar.OptionShowIts())
 
 	for _, video := range fileList {
 		wg.Add(1)
 		go func(video os.FileInfo) {
+			if len(filepath.Ext(video.Name())) < 1 {
+				wg.Done()
+				_ = bar.Add(1)
+				return
+			}
+
 			extension := filepath.Ext(video.Name())[1:]
 			// check if extension is one of valid yt-dlp extensions, if not ignore file
 			switch extension {
@@ -79,6 +84,7 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 				oldFileList.RUnlock()
 
 				wg.Done()
+				_ = bar.Add(1)
 				return
 			}
 
@@ -112,11 +118,12 @@ func Index(path string, results chan FileList, oldFileList *FileList) {
 	if !bar.IsFinished() {
 		_ = bar.Finish()
 	}
+	_ = bar.Close()
+
+	fmt.Println("Finished scan.")
 
 	results <- FL
 	close(results)
-
-	fmt.Println("\nArchive scan finished.")
 }
 
 func filenameToID(filename string) string {

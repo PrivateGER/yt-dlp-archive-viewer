@@ -15,9 +15,17 @@ import (
 
 func main() {
 	var path string
-	flag.StringVar(&path, "path", "./", "the full path to the ytdlp archive (with a / suffix)")
+	flag.StringVar(&path, "path", "./", "the full path to the ytdlp archive")
+	// append last slash in case it's not provided
+	if path[len(path)-1:] != "/" {
+		path += "/"
+	}
 	var port int
 	flag.IntVar(&port, "port", 8000, "the port for the web panel to listen on")
+	var autorefresh bool
+	flag.BoolVar(&autorefresh, "refresh", false, "whether should the index be updated every x seconds")
+	var refreshInterval int
+	flag.IntVar(&refreshInterval, "interval", 60, "the interval for the index to update in seconds")
 
 	flag.Parse()
 
@@ -35,9 +43,12 @@ func main() {
 			FL.Lock()
 			FL.Files = refreshedFL.Files
 			FL.Unlock()
-			fmt.Println("File list refreshed")
 
-			time.Sleep(60 * time.Second)
+			if !autorefresh {
+				return
+			}
+
+			time.Sleep(time.Duration(refreshInterval) * time.Second)
 		}
 	}()
 
