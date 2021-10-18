@@ -16,8 +16,8 @@
 
     {{range .Files}}
         <p><a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a>
-            {{ if .Metadata.ChannelID }} [M] {{ end }}
-            {{ if .Metadata.ChannelID }} - {{.Metadata.Channel }} {{ end }}<br /></p>
+            {{ if .Metadata.Channel }} [M] {{ end }}
+            {{ if .Metadata.Channel }} - {{.Metadata.Channel }} {{ end }}<br /></p>
     {{end}}
 </div>
 {{end}}

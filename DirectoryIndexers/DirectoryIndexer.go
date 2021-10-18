@@ -25,7 +25,7 @@ type VideoFile struct {
 	Metadata Metadata
 }
 
-func Index(path string, results chan FileList) {
+func Index(path string, results chan FileList, oldFileList *FileList) {
 	var FL FileList
 
 	// Initialize the RWMutex HERE manually because *IT IS A POINTER TO A MUTEX*, so it defaults to a nil value
@@ -66,14 +66,36 @@ func Index(path string, results chan FileList) {
 
 			id := filenameToID(video.Name())
 
-			FL.Lock()
-			FL.Files[id] = VideoFile{
+			// file has already been added before
+			if _, ok := oldFileList.Files[id]; ok {
+				FL.Lock()
+				oldFileList.RLock()
+				FL.Files[id] = oldFileList.Files[id]
+				FL.Unlock()
+				oldFileList.RUnlock()
+
+				wg.Done()
+				return
+			}
+
+			videoObject := VideoFile{
 				Filename:  video.Name(),
 				Extension: extension,
 				Title:     filenameToTitle(video.Name(), extension),
 				Id:        id,
 				Metadata:  Metadata{},
 			}
+
+			metadata, err := LoadMetadata(videoObject, path)
+			if err == nil {
+				videoObject.Metadata = Metadata{
+					Channel:       metadata.Channel,
+					Thumbnail:     metadata.Thumbnail,
+				}
+			}
+
+			FL.Lock()
+			FL.Files[id] = videoObject
 			FL.Unlock()
 
 			_ = bar.Add(1)
@@ -89,7 +111,7 @@ func Index(path string, results chan FileList) {
 	results <- FL
 	close(results)
 
-	fmt.Println("Archive scan finished.")
+	fmt.Println("\nArchive scan finished.")
 }
 
 func filenameToID(filename string) string {

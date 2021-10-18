@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 	"ytdlp-viewer/DirectoryIndexers"
 )
 
@@ -32,7 +31,7 @@ func View(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexe
 	}
 
 	// if no metadata loaded, do so
-	if reflect.ValueOf(FL.Files[keys[0]].Metadata).IsZero() {
+	if FL.Files[keys[0]].Metadata.ChannelID == "" {
 		metadata, err := DirectoryIndexers.LoadMetadata(FL.Files[keys[0]], path)
 		if err == nil {
 			var fileObject DirectoryIndexers.VideoFile

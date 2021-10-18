@@ -33,9 +33,15 @@ func SearchHandler(writer http.ResponseWriter, request *http.Request, FL *Direct
 			results = append(results, video)
 			break
 		}
+		addAsResult := false
 		if strings.Contains(strings.ToUpper(video.Title), strings.ToUpper(keys[0])) {
+			addAsResult = true
+		}
+		if strings.Contains(strings.ToUpper(video.Metadata.Channel), strings.ToUpper(keys[0])) {
+			addAsResult = true
+		}
+		if addAsResult {
 			results = append(results, video)
-			continue
 		}
 	}
 

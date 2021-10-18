@@ -29,12 +29,13 @@ func main() {
 			resultChannel := make(chan DirectoryIndexers.FileList)
 
 			fmt.Println("Starting scanner at", path)
-			go DirectoryIndexers.Index(path, resultChannel)
+			go DirectoryIndexers.Index(path, resultChannel, &FL)
 
 			refreshedFL := <-resultChannel
 			FL.Lock()
 			FL.Files = refreshedFL.Files
 			FL.Unlock()
+			fmt.Println("File list refreshed")
 
 			time.Sleep(60 * time.Second)
 		}
