@@ -119,8 +119,6 @@ func filenameToID(filename string) string {
 
 	matches := regexp2FindAllString(r, filename)
 	if len(matches) == 0 {
-		fmt.Println("Got video without square-bracket ID format. Falling back to youtube-dl 11-char string matching (!THIS MAY CAUSE ISSUES!):", filename)
-
 		r = regexp2.MustCompile("-[A-Za-z0-9_-]{11}", regexp2.RegexOptions(0))
 		matches = regexp2FindAllString(r, filename)
 		if len(matches) == 0 {
@@ -130,7 +128,6 @@ func filenameToID(filename string) string {
 		// strips first dash away from the result (yes, I know this is DIRTY.
 		matches = []string{matches[len(matches)-1]}
 		matches[0] = matches[0][1:]
-		fmt.Println("Recovered ID:", matches[0])
 	}
 	return matches[len(matches)-1] // last element = the id between square brackets
 }

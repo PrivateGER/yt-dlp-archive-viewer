@@ -12,7 +12,7 @@ stages:
 compile:
   stage: build
   script:
-    - go build -race -ldflags "-extldflags '-static'" -o $CI_PROJECT_DIR/ytdlp-archive-viewer .
+    - go build -ldflags "-extldflags '-static'" -o $CI_PROJECT_DIR/ytdlp-archive-viewer .
   artifacts:
     paths:
       - ytdlp-archive-viewer
