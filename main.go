@@ -64,6 +64,10 @@ func main() {
 		fmt.Println(time.Now().String(),request.URL)
 		PageHandlers.View(writer, request, &FL, path)
 	})
+	http.HandleFunc("/static", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Println(time.Now().String(),request.URL)
+		PageHandlers.Static(writer, request)
+	})
 	http.Handle("/videos/", http.StripPrefix("/videos/", http.FileServer(http.Dir(path))))
 
 	err := http.ListenAndServe(":" + strconv.Itoa(port), nil)
