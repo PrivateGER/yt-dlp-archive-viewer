@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	_ "embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,6 +14,9 @@ import (
 	"ytdlp-viewer/DirectoryIndexers"
 	"ytdlp-viewer/PageHandlers"
 )
+
+//go:embed PageHandlers/static
+var staticEmbedFS embed.FS
 
 func main() {
 	var path string
@@ -64,9 +69,17 @@ func main() {
 		fmt.Println(time.Now().String(),request.URL)
 		PageHandlers.View(writer, request, &FL, path)
 	})
+
+	subFS, err := fs.Sub(staticEmbedFS, "PageHandlers/static")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(subFS))))
+
 	http.Handle("/videos/", http.StripPrefix("/videos/", http.FileServer(http.Dir(path))))
 
-	err := http.ListenAndServe(":" + strconv.Itoa(port), nil)
+	err = http.ListenAndServe(":" + strconv.Itoa(port), nil)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
