@@ -10,7 +10,7 @@ Obviously replace the last argument with whatever you want to download.
 
 # Usage
 
-Either build and use the executable directly or use the Docker iamge. The latter is *greatly* recommended.
+Either build and use the executable directly or use the Docker iamge. The latter is *greatly* recommended, both due to simplicity and because this is some random Go code written by some idiot who may as well have accidentally put Log4j-hell v2 in this.
 
 yt-dlp-archive-viewer runs on port 8000 by default.
 
