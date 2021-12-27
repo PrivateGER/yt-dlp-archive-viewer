@@ -14,4 +14,4 @@ Either build and use the executable directly or use the Docker iamge. The latter
 
 yt-dlp-archive-viewer runs on port 8000 by default.
 
-Sample Docker command: ``docker run -d --restart unless-stopped -v /your/archive/directory:/archive privateger.docker.scarf.sh/privateger/yt-dlp-archive-viewer:latest``
+Sample Docker command: ``docker run -d --restart unless-stopped -p 8000:8000 -v /your/archive/directory:/archive privateger.docker.scarf.sh/privateger/yt-dlp-archive-viewer:latest``
