@@ -14,6 +14,12 @@
         </label>
     </form>
 
+    {{ if .ShowingAll }}
+        <br />Showing <b>all</b> {{.FileCount}} videos.
+    {{ else }}
+        <br />Only up to 100 random videos are shown. <a href="/?all=1">Show all videos.</a>
+    {{ end }}
+
     {{range .Files}}
         <p><a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a>
             {{ if .Metadata.Channel }} [M] {{ end }}

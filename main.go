@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"ytdlp-viewer/DirectoryIndexers"
@@ -21,10 +22,6 @@ var staticEmbedFS embed.FS
 func main() {
 	var path string
 	flag.StringVar(&path, "path", "./", "the full path to the ytdlp archive")
-	// append last slash in case it's not provided
-	if path[len(path)-1:] != "/" {
-		path += "/"
-	}
 	var port int
 	flag.IntVar(&port, "port", 8000, "the port for the web panel to listen on")
 	var autorefresh bool
@@ -33,6 +30,12 @@ func main() {
 	flag.IntVar(&refreshInterval, "interval", 60, "the interval for the index to update in seconds")
 
 	flag.Parse()
+
+	// append last slash in case it's not provided
+	if !strings.HasSuffix(path, "/") {
+		path += "/"
+		fmt.Println("Added missing trailing slash.")
+	}
 
 	var FL DirectoryIndexers.FileList
 	FL.RWMutex = &sync.RWMutex{}
@@ -58,15 +61,15 @@ func main() {
 	}()
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Println(time.Now().String(),request.URL)
+		fmt.Println(time.Now().String(), request.URL)
 		PageHandlers.Index(writer, request, &FL)
 	})
 	http.HandleFunc("/search", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Println(time.Now().String(),request.URL)
+		fmt.Println(time.Now().String(), request.URL)
 		PageHandlers.SearchHandler(writer, request, &FL)
 	})
 	http.HandleFunc("/view", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Println(time.Now().String(),request.URL)
+		fmt.Println(time.Now().String(), request.URL)
 		PageHandlers.View(writer, request, &FL, path)
 	})
 
@@ -79,7 +82,7 @@ func main() {
 
 	http.Handle("/videos/", http.StripPrefix("/videos/", http.FileServer(http.Dir(path))))
 
-	err = http.ListenAndServe(":" + strconv.Itoa(port), nil)
+	err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
