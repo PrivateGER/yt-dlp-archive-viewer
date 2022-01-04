@@ -21,7 +21,7 @@ var staticEmbedFS embed.FS
 
 func main() {
 	var path string
-	flag.StringVar(&path, "path", "./", "the full path to the ytdlp archive")
+	flag.StringVar(&path, "path", "/archive", "the full path to the ytdlp archive")
 	var port int
 	flag.IntVar(&port, "port", 8000, "the port for the web panel to listen on")
 	var autorefresh bool
