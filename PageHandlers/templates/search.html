@@ -1,5 +1,7 @@
 {{define "head"}}
     <title>Search result | {{.SearchTerm}}</title>
+    <link href="/static/bulma.min.css" rel="stylesheet" />
+    <link href="/static/bulmaswatch.min.css" rel="stylesheet" />
 {{end}}
 
 {{define "body"}}
@@ -10,7 +12,36 @@
         </label>
     </form>
 
-    {{range .Results}}
-        <a href="/view?id={{.Id}}">{{.Title}} {{ if .Metadata.Channel }} - {{ .Metadata.Channel }} {{end}} - {{.Id}}</a><br />
-    {{end}}
+    <div class="is-flex is-flex-wrap-wrap" style="gap: 10px !important;">
+        {{range .Results}}
+
+        <div>
+            <div class="card" style="max-width: 290px; padding: 10px;">
+                <div class="card-image">
+                    <figure class="image">
+                        <a href="/view?id={{.Id}}">
+                            {{ if .Metadata.Thumbnail }}
+                            <img alt="Video thumbnail" style="width: 240px; height: 135px" src="/videos/{{ .Metadata.Thumbnail }}">
+                            {{ else }}
+                            <img alt="Placeholder image" style="width: 240px; height: 135px" src="/static/placeholder.png">
+                            {{ end }}
+                        </a>
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-content">
+                            <p class="title is-4">{{ .Title }}</p>
+                            {{ if .Metadata.Channel }}
+                            <p class="subtitle is-6">{{ .Metadata.Channel }}</p>
+                            {{ else }}
+                            <p class="subtitle is-6">Unknown</p>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{end}}
+    </div>
 {{end}}

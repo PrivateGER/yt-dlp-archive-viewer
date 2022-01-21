@@ -2,6 +2,7 @@ package DirectoryIndexers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -66,6 +67,15 @@ func LoadMetadata(videoobject VideoFile, path string) (Metadata, error) {
 	_ = jsonMetadataFile.Close()
 
 	metadata, err := ParseMetadata(metadataBytes)
+
+	// cut off file extension to get the webp thumbnail filename
+	thumbnailFilename := strings.TrimSuffix(path + videoobject.Filename, filepath.Ext(videoobject.Filename)) + ".webp"
+	if _, err := os.Stat(thumbnailFilename); errors.Is(err, os.ErrNotExist) {
+		metadata.Thumbnail = ""
+	} else {
+		metadata.Thumbnail = strings.TrimSuffix(videoobject.Filename, filepath.Ext(videoobject.Filename)) + ".webp"
+	}
+
 	if err != nil {
 		return Metadata{}, err
 	}
