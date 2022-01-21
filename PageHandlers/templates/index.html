@@ -22,12 +22,6 @@
         <br />Only up to 100 random videos are shown. <a href="/?all=1">Show all videos.</a>
     {{ end }}
 
-    {{range .Files}}
-        <p><a href="/view?id={{.Id}}">{{.Id}} - {{.Title}}</a>
-            {{ if .Metadata.Channel }} [M] {{ end }}
-            {{ if .Metadata.Channel }} - {{.Metadata.Channel }} {{ end }}<br /></p>
-    {{end}}
-
     <div class="is-flex is-flex-wrap-wrap" style="gap: 10px !important;">
         {{range .Files}}
 
