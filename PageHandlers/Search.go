@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"ytdlp-viewer/DirectoryIndexers"
 )
 
 type SearchPageData struct {
-	Results		[]DirectoryIndexers.VideoFile
-	ResultCount	string
-	SearchTerm	string
+	Results     []DirectoryIndexers.VideoFile
+	ResultCount string
+	SearchTerm  string
 }
 
 func SearchHandler(writer http.ResponseWriter, request *http.Request, FL *DirectoryIndexers.FileList) {
@@ -24,6 +25,15 @@ func SearchHandler(writer http.ResponseWriter, request *http.Request, FL *Direct
 	if !ok || len(keys[0]) < 1 {
 		log.Println("Url Param 'term' is missing")
 		return
+	}
+
+	if strings.Contains(keys[0], "youtube.com/watch") || strings.HasPrefix(keys[0], "https://youtu.be/") {
+		ytURL, err := url.Parse(keys[0])
+		if err == nil {
+			if ytURL.Query().Get("v") != "" {
+				keys[0] = ytURL.Query().Get("v")
+			}
+		}
 	}
 
 	var results []DirectoryIndexers.VideoFile
@@ -48,7 +58,7 @@ func SearchHandler(writer http.ResponseWriter, request *http.Request, FL *Direct
 	data := SearchPageData{
 		Results:     results,
 		ResultCount: strconv.Itoa(len(results)),
-		SearchTerm: keys[0],
+		SearchTerm:  keys[0],
 	}
 
 	err := tmpl["search.html"].ExecuteTemplate(writer, "base", data)
