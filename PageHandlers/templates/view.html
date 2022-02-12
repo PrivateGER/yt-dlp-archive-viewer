@@ -25,7 +25,11 @@
 
         {{ if .Metadata.ChannelID }}
             <div>
-                <p style="float: right">{{ .Metadata.LikeCount }} likes | {{ .Metadata.DislikeCount }} dislikes</p>
+                {{ if .Metadata.LikeCount }}
+                    <p style="float: right">{{ .Metadata.LikeCount }} likes | {{ .Metadata.DislikeCount }} dislikes</p>
+                {{ else }}
+                    <p style="float: right">Rating data not saved / incompatible format</p>
+                {{ end }}
 
                 <p>{{ .Metadata.ViewCount }} views</p>
                 <p>Uploaded by: <a href="/search?term={{ .Metadata.Channel }}">{{ .Metadata.Channel }}</a> <a href="{{ .Metadata.ChannelURL }}">[YT]</a></p>
